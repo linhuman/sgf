@@ -23,9 +23,10 @@ import (
 	"os"
 	"reflect"
 	"runtime/debug"
-	"sgf/config"
 	"strings"
 	"time"
+
+	"github.com/linhuman/sgf/config"
 )
 
 func SliceLen(l interface{}) int {

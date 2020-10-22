@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"reflect"
-	"sgf/config"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/linhuman/sgf/config"
 
 	_ "github.com/go-sql-driver/mysql"
 )
