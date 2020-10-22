@@ -11,12 +11,14 @@ import (
 func stop_func() {
 	fmt.Println("shutdown...")
 }
+
 func main() {
+	defer common.ErrRecoverLog("异常", common.GetFunctionName()+"_error")
 	sgf.Initialize(SgfConfig)
 	db := mysql.GetInstance()
-	db.Report(true)
+	db.Report(true) //打印sql信息
 	data, err, report := db.GetRow("SELECT * FROM t_test")
-	fmt.Println(data, err, report) //map[id:3 user_id:11 username:test] <nil> [SQL]SELECT * FROM t_test [time]1ms
+	fmt.Println(data, err, report) //map[id:3 user_id:11 username:test]< nil> [SQL]SELECT * FROM t_test [time]1ms
 
 	data2, err, report := db.GetAll("SELECT * FROM t_test")
 	fmt.Println(data2, err, report) //[map[id:3 user_id:11 username:test]] <nil> [SQL]SELECT * FROM t_test [time]
@@ -27,7 +29,7 @@ func main() {
 	rs, err, report := db.AutoUpdate("t_test", map[string]interface{}{"user_id": 21}, map[string]interface{}{"id": 3})
 	fmt.Println(rs, err, report) //1 <nil> [SQL]UPDATE t_test SET `user_id`=21 WHERE `id`=3 [time]1ms
 
-	db2 := mysql.GetInstance("test")
+	db2 := mysql.GetInstance("test") //连接另一个数据库
 	data, err, report = db2.GetRow("SELECT * FROM t_test")
 	fmt.Println(data, err, report)
 
