@@ -1,8 +1,9 @@
 package sgf
 
 import (
-	"sgf/config"
 	"sync"
+
+	"github.com/linhuman/sgf/config"
 )
 
 var once sync.Once
