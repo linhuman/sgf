@@ -347,3 +347,6 @@ func HttpDo(url_string string, method string, params url.Values, headers map[str
 
 	return body, err
 }
+func Sleep(seconds time.Duration) {
+	time.Sleep(seconds * time.Second)
+}
