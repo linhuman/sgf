@@ -60,7 +60,7 @@ func GetInstance(field ...interface{}) *mysql {
 	return obj
 }
 
-//插入一条数据
+//更新数据
 func (m *mysql) AutoUpdate(table string, args ...map[string]interface{}) (int64, error, string) {
 
 	var vals []interface{}

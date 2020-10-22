@@ -13,8 +13,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os/signal"
 	"runtime"
 	"strconv"
+	"syscall"
 
 	//"crypto/sha1"
 	"encoding/pem"
@@ -349,4 +351,27 @@ func HttpDo(url_string string, method string, params url.Values, headers map[str
 }
 func Sleep(seconds time.Duration) {
 	time.Sleep(seconds * time.Second)
+}
+
+//监听信号
+func HandleSignalToStop(f interface{}, args ...interface{}) {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2)
+	for {
+		sig := <-ch
+		switch sig {
+		case syscall.SIGINT, syscall.SIGTERM: // 终止进程执行
+			signal.Stop(ch)
+			if nil == f {
+				return
+			} else if 1 < len(args) {
+				f.(func(...interface{}))(args...)
+			} else if 1 == len(args) {
+				f.(func(interface{}))(args[0])
+			} else {
+				f.(func())()
+			}
+			return
+		}
+	}
 }
