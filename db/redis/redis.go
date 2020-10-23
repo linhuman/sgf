@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"fmt"
+	//"fmt"
 	"sync"
 	"time"
 
@@ -71,20 +71,18 @@ func (r *redis) Exec(cmd string, key interface{}, args ...interface{}) (interfac
 	reply, err := con.Do(cmd, parmas...)
 	return reply, err
 }
-func (r *redis) Set(key string, value interface{}) (string, error) {
+func (r *redis) Set(key string, value interface{}) (bool, error) {
 	reply, err := r.Exec("set", key, value)
 	if nil == reply {
-		return "NO", err
+		return false, err
 	}
-	return reply.(string), err
+	return true, err
 }
 func (r *redis) Get(key string) (string, error) {
 	reply, err := r.Exec("get", key)
 	if nil == reply {
 		return "", err
 	}
-	fmt.Printf("type: %T\n", reply)
-	fmt.Printf("str: %s\n", reply)
 
 	return string(reply.([]byte)), err
 }
@@ -93,8 +91,7 @@ func (r *redis) Hset(key, field string, value interface{}) (int64, error) {
 	if nil == reply {
 		return -1, err
 	}
-	fmt.Printf("type: %T\n", reply)
-	//fmt.Printf("str: %s\n", reply)
+
 	return reply.(int64), err
 }
 func (r *redis) Hget(key, field string) (string, error) {
@@ -102,6 +99,21 @@ func (r *redis) Hget(key, field string) (string, error) {
 	if nil == reply {
 		return "", err
 	}
-	fmt.Printf("type: %T\n", reply)
+
 	return string(reply.([]byte)), err
+}
+func (r *redis) Zadd(key string, score interface{}, value interface{}) (int64, error) {
+	reply, err := r.Exec("zadd", key, score, value)
+	if nil == reply {
+		return -1, err
+	}
+
+	return reply.(int64), err
+}
+func (r *redis) Setex(key string, timeout uint64, value interface{}) (bool, error) {
+	reply, err := r.Exec("setex", key, timeout, value)
+	if nil == reply {
+		return false, err
+	}
+	return true, err
 }

@@ -216,7 +216,7 @@ func (m *mysql) query(query_sql string, args ...interface{}) ([]map[string]strin
 		build.WriteString("ms")
 		report = build.String()
 	}
-	result := make([]map[string]string, 0)
+	var result []map[string]string
 	if nil != err {
 		return result, err, report
 	} else {
@@ -254,7 +254,7 @@ func (m *mysql) GetRow(query_str string, args ...[]interface{}) (map[string]stri
 		result, err, report = m.query(query_str, args[0]...)
 	}
 	if 0 == len(result) {
-		return map[string]string{}, err, report
+		return nil, err, report
 	}
 	return result[0], err, report
 
@@ -300,7 +300,7 @@ func (m *mysql) GetCols(query_str string, args ...[]interface{}) ([]string, erro
 	} else {
 		query_rs, err, report = m.query(query_str, args[0]...)
 	}
-	var rs_arr = make([]string, 0)
+	var rs_arr []string
 	if len(query_rs) > 0 {
 		for _, v := range query_rs {
 			for _, v1 := range v {

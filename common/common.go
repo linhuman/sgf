@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/base64"
+	"encoding/json"
 
 	//"encoding/hex"
 	"bytes"
@@ -244,10 +245,12 @@ func unpadding(src []byte) []byte {
 	unPadNum := int(src[n-1])
 	return src[:n-unPadNum]
 }
-func FailOnError(err error, msg string) {
-	if err != nil {
-		panic(fmt.Sprintf("%s: %s", msg, err))
+func FailOnError(a ...interface{}) {
+	log := ""
+	for _, v := range a {
+		log = log + fmt.Sprintln(v)
 	}
+	panic("\n" + log)
 }
 
 // 获取正在运行的函数名
@@ -374,4 +377,15 @@ func HandleSignalToStop(f interface{}, args ...interface{}) {
 			return
 		}
 	}
+}
+func JsonDecode(json_str string, result interface{}) error {
+	err := json.Unmarshal([]byte(json_str), result)
+	return err
+}
+func JsonEncode(data interface{}) (string, error) {
+	json_byte, err := json.Marshal(data)
+	if nil != err {
+		return "", err
+	}
+	return string(json_byte), err
 }
