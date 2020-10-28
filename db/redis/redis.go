@@ -94,9 +94,9 @@ func (r *redis) Hset(key, field string, value interface{}) (int64, error) {
 
 	return reply.(int64), err
 }
-func (r *redis) Hget(key, field string) (string, error) {
+func (r *redis) Hget(key, field interface{}) (string, error) {
 	reply, err := r.Exec("hget", key, field)
-	if nil == reply {
+	if nil == reply || nil != err {
 		return "", err
 	}
 
@@ -113,6 +113,36 @@ func (r *redis) Zadd(key string, score interface{}, value interface{}) (int64, e
 func (r *redis) Setex(key string, timeout uint64, value interface{}) (bool, error) {
 	reply, err := r.Exec("setex", key, timeout, value)
 	if nil == reply {
+		return false, err
+	}
+	return true, err
+}
+func (r *redis) HIncrBy(key string, field interface{}, inrc int) (int64, error) {
+	reply, err := r.Exec("hincrby", key, field, inrc)
+	return reply.(int64), err
+}
+func (r *redis) Ttl(key string) (int64, error) {
+	reply, err := r.Exec("ttl", key)
+	return reply.(int64), err
+}
+func (r *redis) ExpireAt(key string, timestamp int64) (bool, error) {
+	reply, err := r.Exec("expireat", key, timestamp)
+	if nil != err || 0 == reply {
+		return false, err
+	}
+	return true, err
+}
+
+func (r *redis) Zrevrank(key string, field interface{}) (int64, error) {
+	reply, err := r.Exec("zrevrank", key, field)
+	if nil == reply || nil != err {
+		return -1, err
+	}
+	return reply.(int64), err
+}
+func (r *redis) Zdelete(key string, field interface{}) (bool, error) {
+	reply, err := r.Exec("zdelete", key, field)
+	if nil != err || 0 == reply {
 		return false, err
 	}
 	return true, err

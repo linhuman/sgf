@@ -245,7 +245,16 @@ func unpadding(src []byte) []byte {
 	unPadNum := int(src[n-1])
 	return src[:n-unPadNum]
 }
-func FailOnError(a ...interface{}) {
+func FailOnError(err error, a ...interface{}) {
+	if nil != err {
+		log := err.Error() + "\n"
+		for _, v := range a {
+			log = log + fmt.Sprintln(v)
+		}
+		panic("\n" + log)
+	}
+}
+func Fail(a ...interface{}) {
 	log := ""
 	for _, v := range a {
 		log = log + fmt.Sprintln(v)
@@ -276,6 +285,14 @@ func Strtotime(data_str string) (int64, error) {
 	return tm.Unix(), err
 }
 func Date(format string, timestamp ...int64) string {
+	if strings.ContainsAny(format, "Y&m&d&H&i&s") {
+		format = strings.Replace(format, "Y", "2006", -1)
+		format = strings.Replace(format, "m", "01", -1)
+		format = strings.Replace(format, "d", "02", -1)
+		format = strings.Replace(format, "H", "15", -1)
+		format = strings.Replace(format, "i", "04", -1)
+		format = strings.Replace(format, "s", "05", -1)
+	}
 	if 0 == len(timestamp) {
 		return time.Now().Format(format)
 	}
@@ -307,6 +324,17 @@ func Integer2str(i interface{}) string {
 	default:
 		return "0"
 	}
+}
+func Str2Int(s string) (int, error) {
+	return strconv.Atoi(s)
+}
+func Str2Int32(s string) (int32, error) {
+	i, err := strconv.ParseInt(s, 10, 32)
+	return int32(i), err
+}
+func Str2Int64(s string) (int64, error) {
+	i, err := strconv.ParseInt(s, 10, 64)
+	return i, err
 }
 func Float2str(i interface{}) string {
 	switch i.(type) {
