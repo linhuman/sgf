@@ -247,19 +247,21 @@ func unpadding(src []byte) []byte {
 }
 func FailOnError(err error, a ...interface{}) {
 	if nil != err {
-		log := err.Error() + "\n"
+		divide := "------------------------------\n"
+		log := err.Error() + "\n" + divide
 		for _, v := range a {
-			log = log + fmt.Sprintln(v)
+			log = log + fmt.Sprintln(v) + divide
 		}
-		panic("\n" + log)
+		panic("\n" + divide + log)
 	}
 }
 func Fail(a ...interface{}) {
 	log := ""
+	divide := "------------------------------\n"
 	for _, v := range a {
-		log = log + fmt.Sprintln(v)
+		log = log + fmt.Sprintln(v) + divide
 	}
-	panic("\n" + log)
+	panic("\n" + divide + log)
 }
 
 // 获取正在运行的函数名

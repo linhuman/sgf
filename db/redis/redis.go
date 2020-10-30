@@ -140,10 +140,10 @@ func (r *redis) Zrevrank(key string, field interface{}) (int64, error) {
 	}
 	return reply.(int64), err
 }
-func (r *redis) Zdelete(key string, field interface{}) (bool, error) {
-	reply, err := r.Exec("zdelete", key, field)
+func (r *redis) Zrem(key string, field ...interface{}) (int64, error) {
+	reply, err := r.Exec("zrem", key, field...)
 	if nil != err || 0 == reply {
-		return false, err
+		return 0, err
 	}
-	return true, err
+	return reply.(int64), err
 }
