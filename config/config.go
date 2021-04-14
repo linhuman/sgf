@@ -1,14 +1,18 @@
 package config
 
-import "time"
+import (
+	"time"
+)
 
 type DbCfgMap map[string]DbCfg
 type RedisCfgMap map[string]RedisCfg
+type routers [][]interface{}
 
 type Cfg struct {
-	Db       DbCfgMap
-	Redis    RedisCfgMap
-	Log_path string
+	Db      DbCfgMap
+	Redis   RedisCfgMap
+	Routers routers
+	LogPath string
 }
 type DbCfg struct {
 	Driver           string

@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/linhuman/sgf/config"
 
 	//"encoding/hex"
 	"bytes"
@@ -28,8 +29,6 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
-
-	"github.com/linhuman/sgf/config"
 )
 
 func SliceLen(l interface{}) int {
@@ -42,7 +41,7 @@ func SliceLen(l interface{}) int {
 
 func WLog(title string, content interface{}, file string, calldepth int) {
 	date := time.Now().Format("2006-01-02")
-	dir := config.Entity.Log_path + "/" + time.Now().Format("200601")
+	dir := config.Entity.LogPath + "/" + time.Now().Format("200601")
 	if IsExist(dir) == false {
 		err := os.MkdirAll(dir, os.ModePerm)
 		if nil != err {
@@ -94,69 +93,10 @@ func IsFile(f string) bool {
 	return !fi.IsDir()
 }
 
-//生成RSA私钥和公钥，保存到文件中
-func GenerateRSAKey(bits int) {
-	//GenerateKey函数使用随机数据生成器random生成一对具有指定字位数的RSA密钥
-	//Reader是一个全局、共享的密码用强随机数生成器
-	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
-	if err != nil {
-		panic(err)
-	}
-	//保存私钥
-	//通过x509标准将得到的ras私钥序列化为ASN.1 的 DER编码字符串
-	X509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
-	//使用pem格式对x509输出的内容进行编码
-	//创建文件保存私钥
-	privateFile, err := os.Create("private.pem")
-	if err != nil {
-		panic(err)
-	}
-	defer privateFile.Close()
-	//构建一个pem.Block结构体对象
-	privateBlock := pem.Block{Type: "RSA Private Key", Bytes: X509PrivateKey}
-	//将数据保存到文件
-	pem.Encode(privateFile, &privateBlock)
-
-	//保存公钥
-	//获取公钥的数据
-	publicKey := privateKey.PublicKey
-	//X509对公钥编码
-	X509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
-	if err != nil {
-		panic(err)
-	}
-	//pem格式编码
-	//创建用于保存公钥的文件
-	publicFile, err := os.Create("public.pem")
-	if err != nil {
-		panic(err)
-	}
-	defer publicFile.Close()
-	//创建一个pem.Block结构体对象
-	publicBlock := pem.Block{Type: "RSA Public Key", Bytes: X509PublicKey}
-	//保存到文件
-	pem.Encode(publicFile, &publicBlock)
-}
-
 //RSA加密
 func RSA_Encrypt(plainText []byte, public_key string) []byte {
-	//打开文件
-	/*
-		file, err := os.Open(path)
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-		//读取文件的内容
-		info, _ := file.Stat()
-		buf := make([]byte, info.Size())
-		file.Read(buf)
-		//pem解码
-		block, _ := pem.Decode(buf)
-	*/
 	block, _ := pem.Decode([]byte(public_key))
 	//x509解码
-
 	publicKeyInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
 		panic(err)
@@ -174,20 +114,6 @@ func RSA_Encrypt(plainText []byte, public_key string) []byte {
 
 //RSA解密
 func RSA_Decrypt(cipherText []byte, private_key string) []byte {
-	//打开文件
-	/*
-		file, err := os.Open(path)
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-		//获取文件内容
-		info, _ := file.Stat()
-		buf := make([]byte, info.Size())
-		file.Read(buf)
-		//pem解码
-		block, _ := pem.Decode(buf)
-	*/
 	block, _ := pem.Decode([]byte(private_key))
 	//X509解码
 	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
@@ -200,8 +126,6 @@ func RSA_Decrypt(cipherText []byte, private_key string) []byte {
 	return plainText
 }
 func AES_cbcencrypt(data, pass, iv string) (string, error) {
-	//pass = fmt.Sprintf("%s", sha1.Sum([]byte(fmt.Sprintf("%s", sha1.Sum([]byte(pass))))))[0:16]
-	//iv = fmt.Sprintf("%s", sha1.Sum([]byte(fmt.Sprintf("%s", sha1.Sum([]byte(iv))))))[0:16]
 	block, err := aes.NewCipher([]byte(pass))
 	if err != nil {
 		return "", err
@@ -214,8 +138,6 @@ func AES_cbcencrypt(data, pass, iv string) (string, error) {
 	return data, nil
 }
 func AES_cbcdecrype(data, pass, iv string) (string, error) {
-	//pass = fmt.Sprintf("%s", sha1.Sum([]byte(fmt.Sprintf("%s", sha1.Sum([]byte(pass))))))[0:16]
-	//iv = fmt.Sprintf("%s", sha1.Sum([]byte(fmt.Sprintf("%s", sha1.Sum([]byte(iv))))))[0:16]
 	block, err := aes.NewCipher([]byte(pass))
 	if err != nil {
 		return "", err

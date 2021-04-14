@@ -1,11 +1,11 @@
 package redis
 
 import (
+	"github.com/linhuman/sgf/config"
+
 	//"fmt"
 	"sync"
 	"time"
-
-	"github.com/linhuman/sgf/config"
 
 	red "github.com/gomodule/redigo/redis"
 )

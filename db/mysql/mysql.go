@@ -3,13 +3,12 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"github.com/linhuman/sgf/config"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/linhuman/sgf/config"
 
 	_ "github.com/go-sql-driver/mysql"
 )
