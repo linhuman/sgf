@@ -1,7 +1,11 @@
 package main
 
-import "github.com/linhuman/sgf"
+import (
+	"demo/config"
+	"github.com/linhuman/sgf"
+)
+
 func main(){
-	sgf.Initialize(SgfConfig)
+	sgf.Initialize(config.SgfConfig)
 	sgf.Run("127.0.0.1:9009")
 }
