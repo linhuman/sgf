@@ -1,14 +1,18 @@
 package sgf
 
 import (
+	"context"
 	"fmt"
 	"github.com/linhuman/sgf/common"
 	"github.com/linhuman/sgf/config"
 	"net/http"
+	"os"
+	"os/signal"
 	"reflect"
 	"runtime/debug"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -56,7 +60,17 @@ func finished(ctx *Context, c *reflect.Value) {
 	}
 	c.MethodByName("After").Call(make([]reflect.Value, 0))
 }
-
+func listenSignal(ctx context.Context, httpSrv *http.Server) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	select {
+	case <-sigs:
+		fmt.Println("Http Server Shutdown...")
+		httpSrv.Shutdown(ctx)
+	}
+}
 func Run(addr string) {
-	http.ListenAndServe(addr, nil)
+    server := http.Server{Addr : addr, Handler : nil}
+	go server.ListenAndServe()
+	listenSignal(context.Background(), &server)
 }
